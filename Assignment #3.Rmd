@@ -1,0 +1,125 @@
+---
+title: 'DATA 607 - Assignment #3'
+author: "Kory Martin"
+date: "2/11/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Question #1
+
+Using the 173 majors listed in fivethirtyeight.com’s College Majors dataset [https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/], provide code that identifies the majors that contain either "DATA" or "STATISTICS"
+
+```{r import-data}
+college_majors = read_csv('https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv', 
+                          show_col_types = FALSE)
+
+```
+
+
+```{r filter-statistics-data majors}
+
+college_majors %>% filter(str_detect(Major,"STATISTICS") | str_detect(Major,"DATA"))
+
+```
+## Question #2
+
+Write code that transforms the data below:
+
+[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+[13] "olive"        "salal berry"
+
+Into a format like this:
+
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+
+```{r pressure, echo=FALSE}
+
+string_1 = '[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"'
+string_2 = '[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry" '
+string_3 = '[9] "elderberry"   "lime"         "lychee"       "mulberry" '
+string_4 = '[13] "olive"        "salal berry"'
+
+data_string = paste(string_1, string_2, sep="\n")
+data_string = paste(data_string, string_3, sep="\n")
+data_string = paste(data_string, string_4, sep="\n")
+
+data_string
+
+str_elements = str_extract_all(data_string, "[a-z]+\\s*[a-z]+")
+
+num_elements = length(str_elements[[1]])
+element_num = 1
+new_string = ""
+for (word in str_elements[[1]]) {
+  #print(word)
+  word_string = str_c("\"",word,"\"")
+  if(element_num < num_elements ) {
+    new_string = paste0(new_string, word_string,", ")  
+  }
+  else {
+    new_string = paste0(new_string, word_string)  
+  }
+  #print(new_string)
+  element_num = element_num+1
+  #print(element_num)
+}
+
+
+new_string = paste0("(",new_string,")")
+new_string = paste0("c",new_string)
+
+print(new_string)
+```
+
+## Question #3
+
+Describe, in words, what these expressions will match:
+  
+  - (.)\1\1
+  
+  This matches 3 consecutive matches of a character
+  e.g. in string "422-3777", it would match 777
+  
+  - (.)(.)\\2\\1
+  
+  This matches a character followed by a second character repeated twice followed by the first character again. 
+  e.g. in string "gamma", it would match amma
+  
+  - (..)\1
+  
+  This matches 2 characters repeated twice
+  e.g. in string "cucumber", it would match cucu
+  
+  - "(.).\\1.\\1"
+  
+  This matches a character followed by any other character, followed by the first character, followed by any other character, followed by the first character
+  e.g. in string "707372456", it would match 70737
+  
+  - "(.)(.)(.).*\\3\\2\\1"
+  
+  This matches any 3 characters, followed by 0 or more additional characters, followed by the 3rd character, then the 2nd character, and lastly the 1st character.
+  e.g. in string "4563abc45643cba1231, it would match abc45643cba
+
+
+## Question #4
+
+Construct regular expressions to match words that:
+  
+  - Start and end with the same character: 
+  
+  ^(.).*\1$
+  
+  - Contain a repeated pair of letters (e.g. "church" contains "ch" repeated twice.): 
+  
+  (..).*\1
+  
+  - Contain one letter repeated in at least three places (e.g. "eleven" contains three "e"s.): 
+  
+  (.).*\1.*\1
